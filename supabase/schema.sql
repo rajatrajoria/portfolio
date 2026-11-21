@@ -69,6 +69,17 @@ create table if not exists public.entries (
 );
 create index if not exists entries_page_date on public.entries (page_id, date desc);
 
+-- ---------- API access ----------
+-- Explicit grants so the tables work even when "auto-expose new tables" is off.
+-- Row level security below still decides which rows each user can see or change.
+grant usage on schema public to anon, authenticated;
+grant select on public.site, public.entries to anon, authenticated;
+grant insert, update on public.site to authenticated;
+grant select on public.site_history to authenticated;
+grant insert, update, delete on public.entries to authenticated;
+grant select on public.admins to authenticated;
+grant execute on function public.is_admin() to anon, authenticated;
+
 -- ---------- Row level security ----------
 alter table public.admins enable row level security;
 alter table public.site enable row level security;
